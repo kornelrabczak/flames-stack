@@ -19,6 +19,20 @@ object SvgPrinter {
                  |See https://github.com/brendangregg.FlameGraph for latest version,
                  |and http://www.brendangregg.com/flamegraphs.html for examples.""".stripMargin
 
+  val definitions: GraphConfig => TypedTag[String] = config =>
+    svgTags.defs(
+      svgTags.linearGradient(
+        id := "background",
+        y1 := "0",
+        y2 := "1",
+        x1 := "0",
+        x2 := "0"
+      )(
+        svgTags.stop(stopColor := config.bgColor1, offset := "5%"),
+        svgTags.stop(stopColor := config.bgColor2, offset := "95%")
+      )
+    )
+
   val invalidInput: GraphConfig => TextItem = config =>
     TextItem(
       color = "black",

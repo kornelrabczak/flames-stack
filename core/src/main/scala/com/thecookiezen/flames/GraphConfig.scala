@@ -11,7 +11,9 @@ case class GraphConfig(
     padTop2: Int,
     padLeftAndRight: Int,
     framePad: Int,
-    maxDepth: Int
+    maxDepth: Int,
+    bgColor1: String,
+    bgColor2: String
 )
 
 object GraphConfig {
@@ -28,6 +30,8 @@ object GraphConfig {
     padTop2 = defaultFontSize * 2,
     padLeftAndRight = 10,
     framePad = 1,
-    maxDepth = 0
+    maxDepth = 0,
+    bgColor1 = "#f8f8f8",
+    bgColor2 = "#e8e8e8"
   )
 }
