@@ -8,42 +8,36 @@ import scala.util.Try
 
 object FlameGraphs {
   type Stack = Seq[String]
-  case class ParsingResult(ignored: Long, totalTime: Long, nodes: Seq[TimedStackFrameElement])
-  case class StackFrameElement(function: String, depth: Long)
-  case class TimedStackFrameElement(function: StackFrameElement, startTime: Long, endTime: Long)
 
   def parseSamples(stackFrames: Iterable[String])(frameParser: String => Option[ParsedFrame]): ParsingResult = {
     var ignored = 0
     var totalTime: Long = 0
     var previousStack = Seq.empty[String]
 
-    val timers = mutable.HashMap[StackFrameElement, Long]()
-    val nodes = ArrayBuffer[TimedStackFrameElement]()
+    val timers = mutable.HashMap[Frame, Long]()
+    val frames = ArrayBuffer[TimedFrame]()
 
     for (frame <- stackFrames) {
       frameParser(frame) match {
         case Some((currentStack, currentSample)) =>
-          nodes ++= flow(timers, previousStack, currentStack, totalTime)
+          frames ++= flow(timers, previousStack, currentStack, totalTime)
           previousStack = currentStack
           totalTime += currentSample
         case None => ignored += 1
       }
     }
 
-    nodes ++= flow(timers, previousStack, Seq.empty, totalTime)
+    // need to call flow again with empty current stack to finish all frames from the previous run
+    if (previousStack.nonEmpty)
+      frames ++= flow(timers, previousStack, Seq.empty, totalTime)
 
-    ParsingResult(ignored, totalTime, nodes)
+    ParsingResult(ignored, totalTime, frames)
   }
 
-  private def flow(
-            nodesStartTime: mutable.Map[StackFrameElement, Long],
-            lastStack: Stack,
-            currentStack: Stack,
-            time: Long
-          ): Seq[TimedStackFrameElement] = {
+  private def flow(nodesStartTime: mutable.Map[Frame, Long], lastStack: Stack, currentStack: Stack, time: Long): Seq[TimedFrame] = {
     val prev = lastStack.toIterator.buffered
     val current = currentStack.toIterator.buffered
-    val nodes = ArrayBuffer[TimedStackFrameElement]()
+    val nodes = ArrayBuffer[TimedFrame]()
 
     var depth = 0
     while (prev.headOption == current.headOption) {
@@ -54,21 +48,25 @@ object FlameGraphs {
 
     // finishes previous nodes that already ended
     for ((last, i) <- prev.zipWithIndex) {
-      val key = StackFrameElement(function = last, depth = depth + i)
+      val key = Frame(function = last, depth = depth + i)
 
       nodesStartTime
         .remove(key)
-        .fold(println(s"Did not have start time for $key"))(nodes += TimedStackFrameElement(key, _, time))
+        .fold(println(s"Did not have start time for $key"))(nodes += TimedFrame(key, _, time))
     }
 
     // starts new node
     for ((current, i) <- current.zipWithIndex) {
-      val key = StackFrameElement(function = current, depth = depth + i)
+      val key = Frame(function = current, depth = depth + i)
       nodesStartTime.put(key, time)
     }
 
     nodes
   }
+
+  case class ParsingResult(ignored: Long, totalTime: Long, nodes: Seq[TimedFrame])
+  case class Frame(function: String, depth: Long)
+  case class TimedFrame(function: Frame, startTime: Long, endTime: Long)
 }
 
 object FrameParser {
