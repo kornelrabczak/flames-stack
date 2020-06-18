@@ -65,8 +65,6 @@ object FlameGraphs {
   }
 
   case class ParsingResult(ignored: Long, totalTime: Long, nodes: Seq[TimedFrame])
-  case class Frame(function: String, depth: Long)
-  case class TimedFrame(function: Frame, startTime: Long, endTime: Long)
 }
 
 object FrameParser {
