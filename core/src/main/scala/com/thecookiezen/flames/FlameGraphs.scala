@@ -31,10 +31,10 @@ object FlameGraphs {
     if (previousStack.nonEmpty)
       frames ++= flow(timers, previousStack, Seq.empty, totalTime)
 
-    ParsingResult(ignored, totalTime, frames)
+    ParsingResult(ignored, totalTime, frames.toSeq)
   }
 
-  private def flow(nodesStartTime: mutable.Map[Frame, Long], lastStack: Stack, currentStack: Stack, time: Long): Seq[TimedFrame] = {
+  private def flow(nodesStartTime: mutable.Map[Frame, Long], lastStack: Stack, currentStack: Stack, time: Long): ArrayBuffer[TimedFrame] = {
     val prev = lastStack.toIterator.buffered
     val current = currentStack.toIterator.buffered
     val nodes = ArrayBuffer[TimedFrame]()
