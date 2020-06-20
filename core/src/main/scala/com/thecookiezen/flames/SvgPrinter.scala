@@ -1,5 +1,7 @@
 package com.thecookiezen.flames
 
+import com.thecookiezen.flames.FlameGraphs.ParsingResult
+import com.thecookiezen.flames.TimedFrame.{maxDepthOfFrame, removeTooNarrowFrames}
 import scalatags.Text.implicits._
 import scalatags.Text.svgAttrs._
 import scalatags.Text.{TypedTag, svgTags}
@@ -52,6 +54,18 @@ object SvgPrinter {
     )
 
     println(r.render)
+
+    val result: ParsingResult = ???
+
+    val timeMax = result.totalTime
+    val widthPerTime = (config.imageMaxWidth - 2 * config.padLeftAndRight).toFloat / timeMax.toFloat
+    val minWidthPerTime = config.minFunctionWidth / widthPerTime
+
+    val frames = removeTooNarrowFrames(result.nodes, minWidthPerTime)
+    val maxDepth = maxDepthOfFrame(frames)
+    val imageHeight = ((maxDepth + 1) * config.frameHeight) + config.padTop + config.padTop2
+
+
   }
 
   def printTextElement(item: TextItem): TypedTag[String] = {
