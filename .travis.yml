@@ -17,4 +17,6 @@ cache:
     - $HOME/.sbt/boot
     - $HOME/.cache/coursier
 
-script: sbt clean +test
+script: sbt clean coverage +test coverageReport
+
+after_success: bash <(curl 0s https://codecov.io/bash)
