@@ -5,20 +5,23 @@ import com.thecookiezen.flames.stackframes.{Frame, ParsingResult, TimedFrame}
 import com.thecookiezen.flames.svg.SvgFlameGraph.SvgElement
 import com.thecookiezen.flames.svg.SvgPrinter.{TextItem, text}
 import com.thecookiezen.flames.svg.{GraphConfig, SvgFlameGraph}
-import scalatags.Text.TypedTag
 
 object FlameGraph {
   val invalidInput: GraphConfig => TextItem = config =>
-    TextItem(
-      fontSize = config.fontSize + 2,
-      text = "ERROR: No valid input provided to flamegraph"
-    )
+    TextItem
+      .fromConfig(config)
+      .copy(
+        fontSize = config.fontSize + 2,
+        text = "ERROR: No valid input provided to flamegraph"
+      )
 
   val title: GraphConfig => TextItem = config =>
-    TextItem(
-      fontSize = config.fontSize + 5,
-      text = config.title
-    )
+    TextItem
+      .fromConfig(config)
+      .copy(
+        fontSize = config.fontSize + 5,
+        text = config.title
+      )
 
   def render(stackFrames: Iterable[String], default: GraphConfig = GraphConfig.default): String = {
     val result = ParsingResult(0, 100, Seq(TimedFrame(Frame("f1", 5), 0, 15)))

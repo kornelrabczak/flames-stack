@@ -168,7 +168,7 @@ function zoom(node) {
         var ew = parseFloat(a.width.value);
         var upstack;
         // Is it an ancestor
-        if (inverted == 0) {
+        if (inverted === false) {
             upstack = parseFloat(a.y.value) > ymin;
         } else {
             upstack = parseFloat(a.y.value) < ymin;

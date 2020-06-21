@@ -9,6 +9,11 @@ case class SvgFlameGraph(
     style: SvgElement = _ => SvgPrinter.style,
     definitions: SvgElement = SvgPrinter.definitions,
     javascript: SvgElement = SvgPrinter.javascript,
+    background: SvgElement = SvgPrinter.rect,
+    details: SvgElement = SvgPrinter.detailsPlaceholder,
+    resetZoom: SvgElement = SvgPrinter.resetZoom,
+    search: SvgElement = SvgPrinter.search,
+    searchResult: SvgElement = SvgPrinter.searchResult,
     title: SvgElement,
     frames: Seq[SvgElement]
 ) {
@@ -20,6 +25,7 @@ case class SvgFlameGraph(
       style(graphConfig),
       definitions(graphConfig),
       javascript(graphConfig),
+      background(graphConfig),
       title(graphConfig)
     )(framess: _*)
   }.render

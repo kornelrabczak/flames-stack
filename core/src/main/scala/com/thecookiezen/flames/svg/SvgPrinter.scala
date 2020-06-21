@@ -57,22 +57,81 @@ object SvgPrinter {
       )
   }
 
-  def text(item: TextItem): GraphConfig => TypedTag[String] = config => {
+  val detailsPlaceholder: GraphConfig => TypedTag[String] = config =>
+    text(
+      TextItem
+        .fromConfig(config)
+        .copy(
+          x = config.padLeftAndRight,
+          y = config.imageHeight - (config.padBottom / 2),
+          attributes = Seq(Attribute("id", "details")),
+          location = None
+        )
+    )
+
+  val resetZoom: GraphConfig => TypedTag[String] = config =>
+    text(
+      TextItem
+        .fromConfig(config)
+        .copy(
+          x = config.padLeftAndRight,
+          text = "Reset Zoom",
+          attributes = Seq(
+            Attribute("id", "unzoom"),
+            Attribute("onclick", "unzoom()"),
+            Attribute("style", "opacity:0.0;cursor:pointer")
+          ),
+          location = None
+        )
+    )
+
+  val search: GraphConfig => TypedTag[String] = config =>
+    text(
+      TextItem
+        .fromConfig(config)
+        .copy(
+          x = config.imageWidth - config.padLeftAndRight - 100,
+          text = "Search",
+          attributes = Seq(
+            Attribute("id", "search"),
+            Attribute("onclick", "search_prompt()"),
+            Attribute("onmouseover", "searchover()"),
+            Attribute("onmouseout", "searchout()"),
+            Attribute("style", "opacity:0.1;cursor:pointer")
+          ),
+          location = None
+        )
+    )
+
+  val searchResult: GraphConfig => TypedTag[String] = config =>
+    text(
+      TextItem
+        .fromConfig(config)
+        .copy(
+          x = config.imageWidth - config.padLeftAndRight - 100,
+          y = config.imageHeight - (config.padBottom / 2),
+          attributes = Seq(Attribute("id", "matched")),
+          location = None
+        )
+    )
+
+  def text(item: TextItem): TypedTag[String] =
     svgTags.text(
       textAnchor := item.location.getOrElse("left"),
-      x := config.imageWidth / 2,
-      y := config.fontSize * 2,
+      x := item.x,
+      y := item.y,
       fontSize := item.fontSize,
       fontFamily := "Verdana",
       fill := item.color,
       for (a <- item.attributes) yield attr(a.key) := a.value
     )(item.text)
-  }
 
   case class TextItem(
       color: String = blackColor,
       fontSize: Int,
-      text: String,
+      x: Double,
+      y: Double,
+      text: String = "",
       location: Option[String] = Some("middle"),
       attributes: Seq[Attribute] = Seq.empty
   )
@@ -81,5 +140,11 @@ object SvgPrinter {
 
   object TextItem {
     val blackColor = "rgb(0,0,0)"
+
+    def fromConfig(config: GraphConfig): TextItem = TextItem(
+      fontSize = config.fontSize,
+      x = config.imageWidth / 2,
+      y = config.fontSize * 2
+    )
   }
 }

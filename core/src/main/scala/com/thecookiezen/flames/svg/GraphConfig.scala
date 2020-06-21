@@ -41,7 +41,7 @@ object GraphConfig {
     padLeftAndRight = 10,
     framePad = 1,
     maxDepth = 0,
-    bgColor1 = "#f8f8f8",
-    bgColor2 = "#e8e8e8"
+    bgColor1 = "#eeeeee",
+    bgColor2 = "#eeeeb0"
   )
 }
