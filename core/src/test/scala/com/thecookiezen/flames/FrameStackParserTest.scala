@@ -60,8 +60,8 @@ class FrameStackParserTest extends AnyFunSpec with Matchers {
       val result = FrameStackParser.parseSamples(stackFrames.toSeq)(FrameParser.parse)
       println(result.nodes)
       result.ignored shouldBe 0
-      result.totalTime shouldBe 7
-      result.nodes.size shouldBe 8
+      result.totalTime shouldBe 45
+      result.nodes.size shouldBe 273
     }
   }
 }
