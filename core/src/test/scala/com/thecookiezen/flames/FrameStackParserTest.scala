@@ -1,9 +1,12 @@
 package com.thecookiezen.flames
 
+import com.thecookiezen.flames.stackframes.{FrameStackParser, FrameParser}
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 
-class FlameGraphsTest extends AnyFunSpec with Matchers {
+import scala.io.Source
+
+class FrameStackParserTest extends AnyFunSpec with Matchers {
 
   describe("A stack frames parser") {
     it("should parse a frames to get stack with sample time") {
@@ -31,7 +34,7 @@ class FlameGraphsTest extends AnyFunSpec with Matchers {
     }
 
     it("should return number of ignored lines because of parsing error") {
-      FlameGraphs.parseSamples(Seq("f1;f2 ", "f1,f2,f3 3", ""))(FrameParser.parse).ignored shouldBe 2
+      FrameStackParser.parseSamples(Seq("f1;f2 ", "f1,f2,f3 3", ""))(FrameParser.parse).ignored shouldBe 2
     }
 
     it("should build a list of all of the nodes from stack frames") {
@@ -45,7 +48,17 @@ class FlameGraphsTest extends AnyFunSpec with Matchers {
         "a1;b1;c1 1"
       )
 
-      val result = FlameGraphs.parseSamples(stackFrames)(FrameParser.parse)
+      val result = FrameStackParser.parseSamples(stackFrames)(FrameParser.parse)
+      result.ignored shouldBe 0
+      result.totalTime shouldBe 7
+      result.nodes.size shouldBe 8
+    }
+
+    it("should build a list of all of the nodes from real life stack frames") {
+      val stackFrames = Source.fromResource("java-stack.txt").getLines()
+
+      val result = FrameStackParser.parseSamples(stackFrames.toSeq)(FrameParser.parse)
+      println(result.nodes)
       result.ignored shouldBe 0
       result.totalTime shouldBe 7
       result.nodes.size shouldBe 8

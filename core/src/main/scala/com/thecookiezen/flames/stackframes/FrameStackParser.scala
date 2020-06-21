@@ -1,12 +1,11 @@
-package com.thecookiezen.flames
+package com.thecookiezen.flames.stackframes
 
-import com.thecookiezen.flames.FrameParser.ParsedFrame
+import com.thecookiezen.flames.stackframes.FrameParser.ParsedFrame
 
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
-import scala.util.Try
 
-object FlameGraphs {
+object FrameStackParser {
   type Stack = Seq[String]
 
   def parseSamples(stackFrames: Iterable[String])(frameParser: String => Option[ParsedFrame]): ParsingResult = {
@@ -62,34 +61,5 @@ object FlameGraphs {
     }
 
     nodes
-  }
-
-  case class ParsingResult(ignored: Long, totalTime: Long, nodes: Seq[TimedFrame])
-}
-
-object FrameParser {
-  type ParsedFrame = (Seq[String], Long)
-
-  def parse(stackFrame: String): Option[ParsedFrame] = {
-    val trimmedFrame = stackFrame.trim
-    if (trimmedFrame.isEmpty) {
-      Option.empty
-    }
-
-    val lastIndexOfSpace = trimmedFrame.lastIndexOf(' ') match {
-      case -1 => Option.empty
-      case i  => Some(i)
-    }
-
-    lastIndexOfSpace.flatMap { index =>
-      val (stack, sample) = trimmedFrame.splitAt(index)
-      val trimmedSample = sample.trim
-      if (trimmedSample.isEmpty)
-        None
-      else {
-        val sampleWithoutFraction = trimmedSample.split('.').head
-        Try((stack.trim.split(';').toSeq, sampleWithoutFraction.toLong)).toOption
-      }
-    }
   }
 }

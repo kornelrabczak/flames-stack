@@ -1,4 +1,4 @@
-package com.thecookiezen.flames
+package com.thecookiezen.flames.stackframes
 
 case class Frame(function: String, depth: Long)
 case class TimedFrame(function: Frame, startTime: Long, endTime: Long)

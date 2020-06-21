@@ -1,5 +1,6 @@
 package com.thecookiezen.flames
 
+import com.thecookiezen.flames.stackframes.{Frame, TimedFrame}
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 

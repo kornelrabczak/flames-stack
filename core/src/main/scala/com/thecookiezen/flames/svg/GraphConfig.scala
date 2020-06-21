@@ -1,10 +1,12 @@
-package com.thecookiezen.flames
+package com.thecookiezen.flames.svg
 
 case class GraphConfig(
-    imageMaxWidth: Int,
-    frameHeight: Int,
+    title: String,
+    imageWidth: Long,
+    imageHeight: Long,
+    frameHeight: Long,
     fontSize: Int,
-    fontWith: Double,
+    fontWidth: Double,
     minFunctionWidth: Double,
     padTop: Int,
     padBottom: Int,
@@ -14,16 +16,24 @@ case class GraphConfig(
     maxDepth: Int,
     bgColor1: String,
     bgColor2: String
-)
+) {
+  def calculatesImageHeight(maxDepth: Long): Long = ((maxDepth + 1) * frameHeight) + padTop + padTop2
+  def calculatesMinTime(totalTime: Long): Double = {
+    val widthPerTime = (imageWidth - 2 * padLeftAndRight).toFloat / totalTime.toFloat
+    minFunctionWidth / widthPerTime
+  }
+}
 
 object GraphConfig {
   val defaultFontSize = 12
 
   val default = GraphConfig(
-    imageMaxWidth = 1200,
+    title = "Flame graph",
+    imageWidth = 1200,
+    imageHeight = defaultFontSize * 5,
     frameHeight = 16,
     fontSize = defaultFontSize,
-    fontWith = 0.59,
+    fontWidth = 0.59,
     minFunctionWidth = 0.1,
     padTop = defaultFontSize * 3,
     padBottom = defaultFontSize * 2 + 10,
