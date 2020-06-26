@@ -8,7 +8,7 @@ import scala.collection.mutable.ArrayBuffer
 object FrameStackParser {
   type Stack = Seq[String]
 
-  def parseSamples(stackFrames: Iterable[String])(frameParser: String => Option[ParsedFrame]): ParsingResult = {
+  def parseSamples(stackFrames: Iterator[String])(frameParser: String => Option[ParsedFrame]): ParsingResult = {
     var ignored = 0
     var totalTime: Long = 0
     var previousStack = Seq.empty[String]
@@ -30,7 +30,7 @@ object FrameStackParser {
     if (previousStack.nonEmpty)
       frames ++= flow(timers, previousStack, Seq.empty, totalTime)
 
-    ParsingResult(ignored, totalTime, frames.toSeq)
+    ParsingResult(ignored, totalTime, frames)
   }
 
   private def flow(nodesStartTime: mutable.Map[Frame, Long], lastStack: Stack, currentStack: Stack, time: Long): ArrayBuffer[TimedFrame] = {
@@ -39,7 +39,7 @@ object FrameStackParser {
     val nodes = ArrayBuffer[TimedFrame]()
 
     var depth = 0
-    while (prev.headOption == current.headOption) {
+    while (prev.nonEmpty && prev.headOption == current.headOption) {
       prev.next()
       current.next()
       depth += 1
