@@ -3,7 +3,7 @@ package com.thecookiezen.flames
 import com.thecookiezen.flames.stackframes.TimedFrame.{maxDepthOfFrame, removeTooNarrowFrames}
 import com.thecookiezen.flames.stackframes.{FrameParser, FrameStackParser}
 import com.thecookiezen.flames.svg.SvgFlameGraph.SvgElement
-import com.thecookiezen.flames.svg.SvgPrinter.{TextItem, text}
+import com.thecookiezen.flames.svg.SvgPrinter.{Attribute, TextItem, text}
 import com.thecookiezen.flames.svg.{GraphConfig, SvgFlameGraph}
 
 object FlameGraph {
@@ -20,7 +20,8 @@ object FlameGraph {
       .fromConfig(config)
       .copy(
         fontSize = config.fontSize + 5,
-        text = config.title
+        text = config.title,
+        attributes = Seq(Attribute("id", "title"))
       )
 
   def render(stackFrames: Iterator[String], default: GraphConfig = GraphConfig.default): String = {
