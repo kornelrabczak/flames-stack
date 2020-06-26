@@ -17,7 +17,7 @@ case class GraphConfig(
     bgColor1: String,
     bgColor2: String
 ) {
-  def calculatesImageHeight(maxDepth: Long): Long = ((maxDepth + 1) * frameHeight) + padTop + padTop2
+  def calculatesImageHeight(maxDepth: Long): Long = ((maxDepth + 1) * frameHeight) + padTop + padBottom
   def calculatesMinTime(totalTime: Long): Double = {
     val widthPerTime = (imageWidth - 2 * padLeftAndRight).toFloat / totalTime.toFloat
     minFunctionWidth / widthPerTime
