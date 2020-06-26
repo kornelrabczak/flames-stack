@@ -1,7 +1,7 @@
 package com.thecookiezen.flames
 
 import com.thecookiezen.flames.stackframes.TimedFrame.{maxDepthOfFrame, removeTooNarrowFrames}
-import com.thecookiezen.flames.stackframes.{Frame, ParsingResult, TimedFrame}
+import com.thecookiezen.flames.stackframes.{FrameParser, FrameStackParser}
 import com.thecookiezen.flames.svg.SvgFlameGraph.SvgElement
 import com.thecookiezen.flames.svg.SvgPrinter.{TextItem, text}
 import com.thecookiezen.flames.svg.{GraphConfig, SvgFlameGraph}
@@ -23,20 +23,19 @@ object FlameGraph {
         text = config.title
       )
 
-  def render(stackFrames: Iterable[String], default: GraphConfig = GraphConfig.default): String = {
-    val result = ParsingResult(0, 100, Seq(TimedFrame(Frame("f1", 5), 0, 15)))
-//    val result = FrameStackParser.parseSamples(stackFrames)
+  def render(stackFrames: Iterator[String], default: GraphConfig = GraphConfig.default): String = {
+    val result = FrameStackParser.parseSamples(stackFrames)(FrameParser.parse)
 
     val frames = removeTooNarrowFrames(result.nodes, default.calculatesMinTime(result.totalTime))
     val maxDepth = maxDepthOfFrame(frames)
     val config = default.copy(imageHeight = default.calculatesImageHeight(maxDepth))
 
-    val (titleSvg: SvgElement, framesToDraw) =
+    val msg =
       if (result.totalTime == 0 || result.nodes.isEmpty)
-        (invalidInput(config), Seq.empty[SvgElement])
+        invalidInput(config)
       else
-        (text(title(config)), Seq.empty[SvgElement])
+        title(config)
 
-    SvgFlameGraph(title = titleSvg, frames = framesToDraw).render(config)
+    SvgFlameGraph(title = _ => text(msg), frames = Seq.empty[SvgElement]).render(config)
   }
 }
