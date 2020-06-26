@@ -1,7 +1,7 @@
 package com.thecookiezen.flames.svg
 
 import com.thecookiezen.flames.svg.SvgFlameGraph.SvgElement
-import scalatags.Text.{TypedTag, svgTags}
+import scalatags.Text.TypedTag
 
 case class SvgFlameGraph(
     header: SvgElement = SvgPrinter.svgHeader,
@@ -10,27 +10,27 @@ case class SvgFlameGraph(
     definitions: SvgElement = SvgPrinter.definitions,
     javascript: SvgElement = SvgPrinter.javascript,
     background: SvgElement = SvgPrinter.rect,
+    title: SvgElement,
     details: SvgElement = SvgPrinter.detailsPlaceholder,
     resetZoom: SvgElement = SvgPrinter.resetZoom,
     search: SvgElement = SvgPrinter.search,
     searchResult: SvgElement = SvgPrinter.searchResult,
-    title: SvgElement,
     frames: Seq[SvgElement]
 ) {
   def render(graphConfig: GraphConfig): String = {
     val framess = frames.map(f => f(graphConfig))
 
-    svgTags.svg(header(graphConfig))(
+    header(graphConfig)(
       description(graphConfig),
       style(graphConfig),
       definitions(graphConfig),
       javascript(graphConfig),
       background(graphConfig),
+      title(graphConfig),
       details(graphConfig),
       resetZoom(graphConfig),
       search(graphConfig),
-      searchResult(graphConfig),
-      title(graphConfig)
+      searchResult(graphConfig)
     )(framess: _*)
   }.render
 }
