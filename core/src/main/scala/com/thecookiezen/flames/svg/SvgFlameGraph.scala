@@ -26,6 +26,10 @@ case class SvgFlameGraph(
       definitions(graphConfig),
       javascript(graphConfig),
       background(graphConfig),
+      details(graphConfig),
+      resetZoom(graphConfig),
+      search(graphConfig),
+      searchResult(graphConfig),
       title(graphConfig)
     )(framess: _*)
   }.render
