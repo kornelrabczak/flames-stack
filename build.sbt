@@ -10,7 +10,7 @@ lazy val scalatags = "com.lihaoyi" %% "scalatags" % "0.8.2"
 lazy val scalaTest = "org.scalatest" %% "scalatest" % "3.1.1"
 
 lazy val root = (project in file("."))
-  .aggregate(core)
+  .aggregate(core, cli)
   .settings(
     name := "flames-stack",
     crossScalaVersions := Nil
@@ -24,4 +24,13 @@ lazy val core = (project in file("core"))
       scalaTest % Test
     )
   )
+
+lazy val cli = (project in file("cli"))
+  .settings(
+    crossScalaVersions := supportedScalaVersions,
+    libraryDependencies ++= Seq(
+      "org.tpolecat" %% "atto-core" % "0.7.0" % Compile
+    )
+  )
+  .dependsOn(core)
 
