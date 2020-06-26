@@ -38,7 +38,7 @@ object FrameStackParser {
     val current = currentStack.toIterator.buffered
     val nodes = ArrayBuffer[TimedFrame]()
 
-    var depth = 0
+    var depth = 1
     while (prev.nonEmpty && prev.headOption == current.headOption) {
       prev.next()
       current.next()
