@@ -27,7 +27,7 @@ case class GraphConfig(
 object GraphConfig {
   val defaultFontSize = 12
 
-  val default = GraphConfig(
+  val default: GraphConfig = GraphConfig(
     title = "Flame graph",
     imageWidth = 1200,
     imageHeight = defaultFontSize * 5,

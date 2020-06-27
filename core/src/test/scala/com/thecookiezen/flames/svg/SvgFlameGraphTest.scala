@@ -8,12 +8,12 @@ class SvgFlameGraphTest extends AnyFunSpec with Matchers {
   it("should render an empty SVG") {
     val svg = SvgFlameGraph(frames = Seq.empty)
 
-    svg.render(GraphConfig.default) should contain allElementsOf Seq(
-      "<svg",
-      "<desc>",
-      "<defs>",
-      "<style",
-      "<rect"
+    svg.render(GraphConfig.default) should (
+      include("<svg")
+        and include("<desc")
+        and include("<defs")
+        and include("<style")
+        and include("<rect")
     )
   }
 

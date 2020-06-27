@@ -84,7 +84,7 @@ object SvgPrinter {
         .fromConfig(config)
         .copy(
           x = config.padLeftAndRight,
-          y = config.imageHeight - (config.padBottom / 2),
+          y = (config.imageHeight - (config.padBottom / 2)).toDouble,
           attributes = Seq(Attribute("id", "details")),
           location = None
         )
@@ -111,7 +111,7 @@ object SvgPrinter {
       TextItem
         .fromConfig(config)
         .copy(
-          x = config.imageWidth - config.padLeftAndRight - 100,
+          x = (config.imageWidth - config.padLeftAndRight - 100).toDouble,
           text = "Search",
           attributes = Seq(
             Attribute("id", "search"),
@@ -129,8 +129,8 @@ object SvgPrinter {
       TextItem
         .fromConfig(config)
         .copy(
-          x = config.imageWidth - config.padLeftAndRight - 100,
-          y = config.imageHeight - (config.padBottom / 2),
+          x = (config.imageWidth - config.padLeftAndRight - 100).toDouble,
+          y = (config.imageHeight - (config.padBottom / 2)).toDouble,
           attributes = Seq(Attribute("id", "matched")),
           location = None
         )
@@ -164,7 +164,7 @@ object SvgPrinter {
 
     def fromConfig(config: GraphConfig): TextItem = TextItem(
       fontSize = config.fontSize,
-      x = config.imageWidth / 2,
+      x = (config.imageWidth / 2).toDouble,
       y = config.fontSize * 2
     )
   }
