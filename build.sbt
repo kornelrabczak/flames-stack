@@ -1,4 +1,4 @@
-lazy val supportedScalaVersions = List("2.13.2", "2.12.11")
+lazy val supportedScalaVersions = List("2.13.2")
 
 scalaVersion := supportedScalaVersions.head
 version          := "0.1.0-SNAPSHOT"
@@ -13,12 +13,10 @@ lazy val root = (project in file("."))
   .aggregate(core, cli)
   .settings(
     name := "flames-stack",
-    crossScalaVersions := Nil
   )
 
 lazy val core = (project in file("core"))
   .settings(
-    crossScalaVersions := supportedScalaVersions,
     libraryDependencies ++= Seq(
       scalatags % Compile,
       scalaTest % Test
@@ -27,7 +25,6 @@ lazy val core = (project in file("core"))
 
 lazy val cli = (project in file("cli"))
   .settings(
-    crossScalaVersions := supportedScalaVersions,
     libraryDependencies ++= Seq(
       "org.tpolecat" %% "atto-core" % "0.7.0" % Compile
     )
