@@ -2,41 +2,37 @@ package com.thecookiezen.flames.stackframes
 
 import com.thecookiezen.flames.stackframes.FrameParser.ParsedFrame
 
-import scala.collection.mutable
-import scala.collection.mutable.ArrayBuffer
-
 object FrameStackParser {
   type Stack = Seq[String]
 
   def parseSamples(stackFrames: Iterator[String])(frameParser: String => Option[ParsedFrame]): ParsingResult = {
-    var ignored = 0
-    var totalTime: Long = 0
-    var previousStack = Seq.empty[String]
-
-    val timers = mutable.HashMap[Frame, Long]()
-    val frames = ArrayBuffer[TimedFrame]()
-
-    for (frame <- stackFrames) {
-      frameParser(frame) match {
-        case Some((currentStack, currentSample)) =>
-          frames ++= flow(timers, previousStack, currentStack, totalTime)
-          previousStack = currentStack
-          totalTime += currentSample
-        case None => ignored += 1
-      }
-    }
-
-    // need to call flow again with empty current stack to finish all frames from the previous run
-    if (previousStack.nonEmpty)
-      frames ++= flow(timers, previousStack, Seq.empty, totalTime)
-
-    ParsingResult(ignored, totalTime, frames)
+    val state = calculateState(stackFrames)(frameParser)
+    ParsingResult(ignored = state.ignored, totalTime = state.totalTime, nodes = state.nodes.toSeq)
   }
 
-  private def flow(nodesStartTime: mutable.Map[Frame, Long], lastStack: Stack, currentStack: Stack, time: Long): ArrayBuffer[TimedFrame] = {
-    val prev = lastStack.toIterator.buffered
-    val current = currentStack.toIterator.buffered
-    val nodes = ArrayBuffer[TimedFrame]()
+  private def calculateState(stackFrames: Iterator[String])(frameParser: String => Option[ParsedFrame]) = {
+    val state = stackFrames.foldLeft(StackState.initial) {
+      case (state, frames) =>
+        frameParser(frames) match {
+          case Some((currentStack, currentSample)) =>
+            flow(state, currentStack)
+              .copy(
+                totalTime = state.totalTime + currentSample,
+                previousStack = currentStack
+              )
+          case None => state.copy(ignored = state.ignored + 1)
+        }
+    }
+
+    if (state.previousStack.nonEmpty)
+      flow(state, Seq.empty)
+    else
+      state
+  }
+
+  private def flow(state: StackState, currentStack: Stack) = {
+    val prev = state.previousStack.iterator.buffered
+    val current = currentStack.iterator.buffered
 
     var depth = 1
     while (prev.nonEmpty && prev.headOption == current.headOption) {
@@ -49,17 +45,17 @@ object FrameStackParser {
     for ((last, i) <- prev.zipWithIndex) {
       val key = Frame(function = last, depth = depth + i)
 
-      nodesStartTime
+      state.timers
         .remove(key)
-        .fold(println(s"Did not have start time for $key"))(nodes += TimedFrame(key, _, time))
+        .fold(println(s"Did not have start time for $key"))(state.nodes += TimedFrame(key, _, state.totalTime))
     }
 
     // starts new node
     for ((current, i) <- current.zipWithIndex) {
       val key = Frame(function = current, depth = depth + i)
-      nodesStartTime.put(key, time)
+      state.timers.put(key, state.totalTime)
     }
 
-    nodes
+    state
   }
 }
