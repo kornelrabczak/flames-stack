@@ -10,7 +10,7 @@ case class SvgFlameGraph(
     definitions: SvgElement = SvgPrinter.definitions,
     javascript: SvgElement = SvgPrinter.javascript,
     background: SvgElement = SvgPrinter.rect,
-    title: SvgElement,
+    title: SvgElement = SvgPrinter.title,
     details: SvgElement = SvgPrinter.detailsPlaceholder,
     resetZoom: SvgElement = SvgPrinter.resetZoom,
     search: SvgElement = SvgPrinter.search,

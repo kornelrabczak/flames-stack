@@ -18,6 +18,27 @@ object SvgPrinter {
       viewBox := s"0 0 ${config.imageWidth} ${config.imageHeight}"
     )
 
+  val invalidInput: GraphConfig => TypedTag[String] = config =>
+    text(
+      TextItem
+        .fromConfig(config)
+        .copy(
+          fontSize = config.fontSize + 2,
+          text = "ERROR: No valid input provided to flamegraph"
+        )
+    )
+
+  val title: GraphConfig => TypedTag[String] = config =>
+    text(
+      TextItem
+        .fromConfig(config)
+        .copy(
+          fontSize = config.fontSize + 5,
+          text = config.title,
+          attributes = Seq(Attribute("id", "title"))
+        )
+    )
+
   val description: TypedTag[String] = svgTags.desc("""Flame graph stack visualization.
                  |See https://github.com/brendangregg.FlameGraph for latest version,
                  |and http://www.brendangregg.com/flamegraphs.html for examples.""".stripMargin)
