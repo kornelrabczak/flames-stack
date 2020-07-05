@@ -151,7 +151,7 @@ object SvgPrinter {
     svgTags.g(
       `class` := "func_g",
     )(
-      tag("title")(svgTags.text(info(frame)(totalTime))),
+      tag("title")(info(frame)(totalTime)),
       svgTags.rect(
         x := framePosition.x1,
         y := framePosition.y1,
