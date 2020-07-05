@@ -91,7 +91,8 @@ object SvgPrinter {
           x = config.padVertical,
           y = config.imageHeight - (config.padBottomWithLabels.toFloat / 2),
           attributes = Seq(Attribute("id", "details")),
-          location = None
+          location = None,
+          text = " "
         )
     )
 
