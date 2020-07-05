@@ -1,6 +1,8 @@
 package com.thecookiezen.flames.svg
 
-import com.thecookiezen.flames.svg.SvgPrinter.TextItem.blackColor
+import com.thecookiezen.flames.stackframes.{FramePosition, TimedFrame}
+import com.thecookiezen.flames.stackframes.TimedFrame.{info, stripAnnotations, truncateFunctionName}
+import com.thecookiezen.flames.svg.Color.blackColor
 import scalatags.Text.implicits.{raw, _}
 import scalatags.Text.svgAttrs._
 import scalatags.Text.{TypedTag, svgTags}
@@ -46,8 +48,8 @@ object SvgPrinter {
   val definitions: GraphConfig => TypedTag[String] = config =>
     svgTags.defs(
       svgTags.linearGradient(id := "background", y1 := "0", y2 := "1", x1 := "0", x2 := "0")(
-        svgTags.stop(stopColor := config.bgColor1, offset := "5%"),
-        svgTags.stop(stopColor := config.bgColor2, offset := "95%")
+        svgTags.stop(stopColor := config.bgColor1.toString, offset := "5%"),
+        svgTags.stop(stopColor := config.bgColor2.toString, offset := "95%")
       )
     )
 
@@ -63,14 +65,16 @@ object SvgPrinter {
     )
 
   val javascript: GraphConfig => TypedTag[String] = config => {
+    val searchColor = Color(230,0,230)
+
     tag("script")(`type` := "text/ecmascript")(raw(s"""
         |<![CDATA[
         |  var nametype = "Function:";
         |  var fontsize = ${config.fontSize};
         |  var fontwidth = ${config.fontWidth};
-        |  var xpad = ${config.padLeftAndRight};
-        |  var inverted = false;
-        |  var searchcolor = "rgb(230,0,230)";
+        |  var xpad = ${config.padVertical};
+        |  var inverted = ${false};
+        |  var searchcolor = ${searchColor.toString};
         |  
         |  ${Source.fromResource("flamegraph.js").mkString}
         |]]>
@@ -83,8 +87,8 @@ object SvgPrinter {
       TextItem
         .fromConfig(config)
         .copy(
-          x = config.padLeftAndRight,
-          y = (config.imageHeight - (config.padBottom / 2)).toDouble,
+          x = config.padVertical,
+          y = config.imageHeight - (config.padBottomWithLabels.toFloat / 2),
           attributes = Seq(Attribute("id", "details")),
           location = None
         )
@@ -95,7 +99,7 @@ object SvgPrinter {
       TextItem
         .fromConfig(config)
         .copy(
-          x = config.padLeftAndRight,
+          x = config.padVertical,
           text = "Reset Zoom",
           attributes = Seq(
             Attribute("id", "unzoom"),
@@ -111,7 +115,7 @@ object SvgPrinter {
       TextItem
         .fromConfig(config)
         .copy(
-          x = (config.imageWidth - config.padLeftAndRight - 100).toDouble,
+          x = config.imageWidth - config.padVertical - 100,
           text = "Search",
           attributes = Seq(
             Attribute("id", "search"),
@@ -129,12 +133,40 @@ object SvgPrinter {
       TextItem
         .fromConfig(config)
         .copy(
-          x = (config.imageWidth - config.padLeftAndRight - 100).toDouble,
-          y = (config.imageHeight - (config.padBottom / 2)).toDouble,
+          x = config.imageWidth - config.padVertical - 100,
+          y = config.imageHeight - (config.padBottomWithLabels.toFloat / 2),
           attributes = Seq(Attribute("id", "matched")),
           location = None
         )
     )
+
+  val frame: (TimedFrame, Long) => GraphConfig => TypedTag[String] = (frame, totalTime) => config => {
+    val framePosition = FramePosition(config, frame)
+    val fitchars = ((framePosition.x2 - framePosition.x1) / (config.fontSize * config.fontWidth)).toInt
+
+    svgTags.g(
+      `class` := "func_g",
+      attr("onmouseover") := "s(this)",
+      attr("onmouseout") := "c()",
+      attr("onclick") := "zoom(this)"
+    )(
+      tag("title")(svgTags.text(info(frame)(totalTime))),
+      svgTags.rect(
+        x := framePosition.x1,
+        y := framePosition.y1,
+        width := framePosition.width,
+        height := framePosition.height
+      ),
+      text(TextItem(
+        color = Color(242, 10, 32),
+        fontSize = config.fontSize,
+        text = truncateFunctionName(stripAnnotations(frame.frame.function), fitchars),
+        location = None,
+        x = framePosition.x1 + 3,
+        y = 3 + (framePosition.y1 + framePosition.y2) / 2
+      ))
+    )
+  }
 
   def text(item: TextItem): TypedTag[String] =
     svgTags.text(
@@ -143,12 +175,12 @@ object SvgPrinter {
       y := item.y,
       fontSize := item.fontSize,
       fontFamily := "Verdana",
-      fill := item.color,
+      fill := item.color.toString,
       for (a <- item.attributes) yield attr(a.key) := a.value
     )(item.text)
 
   case class TextItem(
-      color: String = blackColor,
+      color: Color = blackColor,
       fontSize: Int,
       x: Double,
       y: Double,
@@ -160,11 +192,9 @@ object SvgPrinter {
   private[svg] case class Attribute(key: String, value: String)
 
   object TextItem {
-    val blackColor = "rgb(0,0,0)"
-
     def fromConfig(config: GraphConfig): TextItem = TextItem(
       fontSize = config.fontSize,
-      x = (config.imageWidth / 2).toDouble,
+      x = config.imageWidth.toFloat / 2,
       y = config.fontSize * 2
     )
   }

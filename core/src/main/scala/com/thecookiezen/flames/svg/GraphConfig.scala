@@ -6,21 +6,21 @@ case class GraphConfig(
     imageHeight: Long,
     frameHeight: Long,
     fontSize: Int,
-    fontWidth: Double,
-    minFunctionWidth: Double,
-    padTop: Int,
-    padBottom: Int,
-    padTop2: Int,
-    padLeftAndRight: Int,
+    fontWidth: Float,
+    minFunctionWidth: Float,
+    widthPerTime: Float,
+    padTopWithTitle: Int,
+    padBottomWithLabels: Int,
+    padTopWithSubtitle: Int,
+    padVertical: Int,
     framePad: Int,
     maxDepth: Int,
-    bgColor1: String,
-    bgColor2: String
+    bgColor1: Color,
+    bgColor2: Color
 ) {
-  def calculatesImageHeight(maxDepth: Long): Long = ((maxDepth + 1) * frameHeight) + padTop + padBottom
-  def calculatesMinTime(totalTime: Long): Double = {
-    val widthPerTime = (imageWidth - 2 * padLeftAndRight).toFloat / totalTime.toFloat
-    minFunctionWidth / widthPerTime
+  def calculatesImageHeight(maxDepth: Long): Long = ((maxDepth + 1) * frameHeight) + padTopWithTitle + padBottomWithLabels
+  def calculatesWidthPerTime(totalTime: Long): Float = {
+    (imageWidth - 2 * padVertical).toFloat / totalTime.toFloat
   }
 }
 
@@ -33,15 +33,16 @@ object GraphConfig {
     imageHeight = defaultFontSize * 5,
     frameHeight = 16,
     fontSize = defaultFontSize,
-    fontWidth = 0.59,
-    minFunctionWidth = 0.1,
-    padTop = defaultFontSize * 3,
-    padBottom = defaultFontSize * 2 + 10,
-    padTop2 = defaultFontSize * 2,
-    padLeftAndRight = 10,
+    fontWidth = 0.59f,
+    minFunctionWidth = 0.1f,
+    widthPerTime = 0f,
+    padTopWithTitle = defaultFontSize * 3, // ypad1
+    padBottomWithLabels = defaultFontSize * 2 + 10, // ypad2
+    padTopWithSubtitle = defaultFontSize * 2, // ypad3
+    padVertical = 10, // xpad
     framePad = 1,
     maxDepth = 0,
-    bgColor1 = "#eeeeee",
-    bgColor2 = "#eeeeb0"
+    bgColor1 = Color(238,238,238),
+    bgColor2 = Color(238,238,176)
   )
 }

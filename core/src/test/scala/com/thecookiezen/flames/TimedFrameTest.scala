@@ -13,11 +13,9 @@ class TimedFrameTest extends AnyFunSpec with Matchers {
     )) shouldBe 15
   }
 
-  it("removes frames from the list that are too short") {
-    TimedFrame.removeTooNarrowFrames(Seq(
-      TimedFrame(Frame("A", 2), 0, 5),
-      TimedFrame(Frame("B", 15), 0, 15),
-      TimedFrame(Frame("C", 8), 3, 12)
-    ), 10) should have size 1
+  it("check if frames are too narrow") {
+    TimedFrame.isFrameTooNarrow(TimedFrame(Frame("A", 2), 0, 5), 10) shouldBe true
+    TimedFrame.isFrameTooNarrow(TimedFrame(Frame("B", 15), 0, 15), 10) shouldBe false
+    TimedFrame.isFrameTooNarrow(TimedFrame(Frame("C", 8), 3, 12), 10) shouldBe true
   }
 }
