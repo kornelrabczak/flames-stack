@@ -47,7 +47,7 @@ object TimedFrame {
       else
         functionName.take(fitChars - 2) + ".."
     } else {
-      functionName
+      ""
     }
   }
 }
