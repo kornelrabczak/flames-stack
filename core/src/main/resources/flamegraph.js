@@ -1,15 +1,14 @@
 "use strict";
-var details, searchbtn, unzoombtn, matchedtxt, svg, searching, currentSearchTerm, ignorecase, ignorecaseBtn;
+var details, searchbtn, unzoombtn, matchedtxt, svg, searching;
 function init(evt) {
     details = document.getElementById("details").firstChild;
     searchbtn = document.getElementById("search");
-    ignorecaseBtn = document.getElementById("ignorecase");
     unzoombtn = document.getElementById("unzoom");
     matchedtxt = document.getElementById("matched");
     svg = document.getElementsByTagName("svg")[0];
     searching = 0;
-    currentSearchTerm = null;
 }
+
 window.addEventListener("click", function(e) {
     var target = find_group(e.target);
     if (target) {
@@ -22,19 +21,21 @@ window.addEventListener("click", function(e) {
     }
     else if (e.target.id == "unzoom") unzoom();
     else if (e.target.id == "search") search_prompt();
-    else if (e.target.id == "ignorecase") toggle_ignorecase();
 }, false)
+
 // mouse-over for info
 // show
 window.addEventListener("mouseover", function(e) {
     var target = find_group(e.target);
-    if (target) details.nodeValue = nametype + " " + g_to_text(target);
+    if (target) details.nodeValue = "Function: " + g_to_text(target);
 }, false)
+
 // clear
 window.addEventListener("mouseout", function(e) {
     var target = find_group(e.target);
     if (target) details.nodeValue = ' ';
 }, false)
+
 // ctrl-F for search
 window.addEventListener("keydown",function (e) {
     if (e.keyCode === 114 || (e.ctrlKey && e.keyCode === 70)) {
@@ -42,13 +43,7 @@ window.addEventListener("keydown",function (e) {
         search_prompt();
     }
 }, false)
-// ctrl-I to toggle case-sensitive search
-window.addEventListener("keydown",function (e) {
-    if (e.ctrlKey && e.keyCode === 73) {
-        e.preventDefault();
-        toggle_ignorecase();
-    }
-}, false)
+
 // functions
 function find_child(node, selector) {
     var children = node.querySelectorAll(selector);
@@ -86,17 +81,20 @@ function update_text(e) {
     var r = find_child(e, "rect");
     var t = find_child(e, "text");
     var w = parseFloat(r.attributes.width.value) -3;
-    var txt = find_child(e, "title").textContent.replace(/\\([^(]*\\)\$/,"");
+    var txt = find_child(e, "title").textContent.replace(/\([^(]*\)$/,"");
     t.attributes.x.value = parseFloat(r.attributes.x.value) + 3;
+
     // Smaller than this size won't fit anything
     if (w < 2 * fontsize * fontwidth) {
         t.textContent = "";
         return;
     }
+
     t.textContent = txt;
     // Fit in full text width
-    if (/^ *\$/.test(txt) || t.getSubStringLength(0, txt.length) < w)
+    if (/^ *$/.test(txt) || t.getSubStringLength(0, txt.length) < w)
         return;
+
     for (var x = txt.length - 2; x > 0; x--) {
         if (t.getSubStringLength(0, x + 2) <= w) {
             t.textContent = txt.substring(0, x) + "..";
@@ -105,6 +103,7 @@ function update_text(e) {
     }
     t.textContent = "";
 }
+
 // zoom
 function zoom_reset(e) {
     if (e.attributes != undefined) {
@@ -129,6 +128,7 @@ function zoom_child(e, x, ratio) {
             e.attributes.width.value = parseFloat(e.attributes.width.value) * ratio;
         }
     }
+
     if (e.childNodes == undefined) return;
     for (var i = 0, c = e.childNodes; i < c.length; i++) {
         zoom_child(c[i], x - xpad, ratio);
@@ -159,7 +159,9 @@ function zoom(node) {
     var ratio = (svg.width.baseVal.value - 2 * xpad) / width;
     // XXX: Workaround for JavaScript float issues (fix me)
     var fudge = 0.0001;
+
     unzoombtn.classList.remove("hide");
+
     var el = document.getElementById("frames").children;
     for (var i = 0; i < el.length; i++) {
         var e = el[i];
@@ -196,7 +198,6 @@ function zoom(node) {
             }
         }
     }
-    search();
 }
 function unzoom() {
     unzoombtn.classList.add("hide");
@@ -207,19 +208,9 @@ function unzoom() {
         zoom_reset(el[i]);
         update_text(el[i]);
     }
-    search();
 }
+
 // search
-function toggle_ignorecase() {
-    ignorecase = !ignorecase;
-    if (ignorecase) {
-        ignorecaseBtn.classList.add("show");
-    } else {
-        ignorecaseBtn.classList.remove("show");
-    }
-    reset_search();
-    search();
-}
 function reset_search() {
     var el = document.querySelectorAll("#frames rect");
     for (var i = 0; i < el.length; i++) {
@@ -229,17 +220,13 @@ function reset_search() {
 function search_prompt() {
     if (!searching) {
         var term = prompt("Enter a search term (regexp " +
-            "allowed, eg: ^ext4_)"
-            + (ignorecase ? ", ignoring case" : "")
-            + "\\nPress Ctrl-i to toggle case sensitivity", "");
+            "allowed, eg: ^ext4_)", "");
         if (term != null) {
-            currentSearchTerm = term;
-            search();
+            search(term)
         }
     } else {
         reset_search();
         searching = 0;
-        currentSearchTerm = null;
         searchbtn.classList.remove("show");
         searchbtn.firstChild.nodeValue = "Search"
         matchedtxt.classList.add("hide");
@@ -247,9 +234,7 @@ function search_prompt() {
     }
 }
 function search(term) {
-    if (currentSearchTerm === null) return;
-    var term = currentSearchTerm;
-    var re = new RegExp(term, ignorecase ? 'i' : '');
+    var re = new RegExp(term);
     var el = document.getElementById("frames").children;
     var matches = new Object();
     var maxwidth = 0;
@@ -259,15 +244,18 @@ function search(term) {
         var rect = find_child(e, "rect");
         if (func == null || rect == null)
             continue;
+
         // Save max width. Only works as we have a root frame
         var w = parseFloat(rect.attributes.width.value);
         if (w > maxwidth)
             maxwidth = w;
+
         if (func.match(re)) {
             // highlight
             var x = parseFloat(rect.attributes.x.value);
             orig_save(rect, "fill");
             rect.attributes.fill.value = searchcolor;
+
             // remember matches
             if (matches[x] == undefined) {
                 matches[x] = w;
@@ -282,8 +270,10 @@ function search(term) {
     }
     if (!searching)
         return;
+
     searchbtn.classList.add("show");
     searchbtn.firstChild.nodeValue = "Reset Search";
+
     // calculate percent matched, excluding vertical overlap
     var count = 0;
     var lastx = -1;
