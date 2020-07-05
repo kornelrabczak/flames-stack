@@ -149,8 +149,6 @@ object SvgPrinter {
       val fitchars = ((framePosition.x2 - framePosition.x1) / (config.fontSize * config.fontWidth)).toInt
 
       svgTags.g(
-        `class` := "func_g"
-      )(
         tag("title")(info(frame)(totalTime)),
         svgTags.rect(
           x := framePosition.x1,
