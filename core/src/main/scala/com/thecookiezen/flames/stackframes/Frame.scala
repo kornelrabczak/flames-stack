@@ -6,6 +6,7 @@ case class TimedFrame(frame: Frame, startTime: Long, endTime: Long)
 object TimedFrame {
   private val numberFormat = java.text.NumberFormat.getIntegerInstance
   private val percentFormat = java.text.NumberFormat.getPercentInstance
+  percentFormat.setMaximumFractionDigits(2)
 
   val maxDepthOfFrame: Seq[TimedFrame] => Long = _.maxBy(_.frame.depth).frame.depth
 
@@ -19,8 +20,8 @@ object TimedFrame {
     if (isEmpty(frame)) {
       s"all ($samplesText, 100%)"
     } else {
-      val pct = (100 * samples).toFloat / totalTime
-      s"${stripAnnotations(frame.frame.function)} ($samplesText samples, ${percentFormat.format(pct)}%)"
+      val pct = samples.toFloat / totalTime.toFloat
+      s"${stripAnnotations(frame.frame.function)} ($samplesText samples, ${percentFormat.format(pct)})"
     }
   }
 

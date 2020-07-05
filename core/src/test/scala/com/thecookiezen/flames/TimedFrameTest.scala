@@ -31,4 +31,8 @@ class TimedFrameTest extends AnyFunSpec with Matchers {
 
     TimedFrame.stripAnnotations(functionName + annotationK) shouldBe functionName
   }
+
+  it("should print frame detailed info with a full fraction number for the sample percentage") {
+    TimedFrame.info(TimedFrame(Frame("A", 2), 0, 5))(99) shouldBe "A (5 samples, 5.05%)"
+  }
 }
