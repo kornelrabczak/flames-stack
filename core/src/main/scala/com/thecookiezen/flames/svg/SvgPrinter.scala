@@ -156,10 +156,11 @@ object SvgPrinter {
         x := framePosition.x1,
         y := framePosition.y1,
         width := framePosition.width,
-        height := framePosition.height
+        height := framePosition.height,
+        fill := Color(242, 10, 32).toString
       ),
       text(TextItem(
-        color = Color(242, 10, 32),
+        color = Color.blackColor,
         fontSize = config.fontSize,
         text = truncateFunctionName(stripAnnotations(frame.frame.function), fitchars),
         location = None,
