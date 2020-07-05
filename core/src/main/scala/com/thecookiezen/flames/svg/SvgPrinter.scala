@@ -105,7 +105,6 @@ object SvgPrinter {
           text = "Reset Zoom",
           attributes = Seq(
             Attribute("id", "unzoom"),
-            Attribute("onclick", "unzoom()"),
             Attribute("style", "opacity:0.0;cursor:pointer")
           ),
           location = None
@@ -121,9 +120,6 @@ object SvgPrinter {
           text = "Search",
           attributes = Seq(
             Attribute("id", "search"),
-            Attribute("onclick", "search_prompt()"),
-            Attribute("onmouseover", "searchover()"),
-            Attribute("onmouseout", "searchout()"),
             Attribute("style", "opacity:0.1;cursor:pointer")
           ),
           location = None
@@ -154,9 +150,6 @@ object SvgPrinter {
 
     svgTags.g(
       `class` := "func_g",
-      attr("onmouseover") := "s(this)",
-      attr("onmouseout") := "c()",
-      attr("onclick") := "zoom(this)"
     )(
       tag("title")(svgTags.text(info(frame)(totalTime))),
       svgTags.rect(
