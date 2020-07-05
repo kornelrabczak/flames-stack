@@ -18,4 +18,17 @@ class TimedFrameTest extends AnyFunSpec with Matchers {
     TimedFrame.isFrameTooNarrow(TimedFrame(Frame("B", 15), 0, 15), 10) shouldBe false
     TimedFrame.isFrameTooNarrow(TimedFrame(Frame("C", 8), 3, 12), 10) shouldBe true
   }
+
+  it("should not change the function name if there is no annotation") {
+    val functionName = "test1"
+
+    TimedFrame.stripAnnotations(functionName) shouldBe functionName
+  }
+
+  it("should strip annotation from a function name") {
+    val functionName = "test1"
+    val annotationK = "_[k]"
+
+    TimedFrame.stripAnnotations(functionName + annotationK) shouldBe functionName
+  }
 }
