@@ -7,7 +7,7 @@ object FrameStackParser {
 
   def parseSamples(stackFrames: Iterator[String])(frameParser: String => Option[ParsedFrame]): ParsingResult = {
     val state = calculateState(stackFrames)(frameParser)
-    ParsingResult(ignored = state.ignored, totalTime = state.totalTime, nodes = state.nodes.toSeq)
+    ParsingResult(ignored = state.ignored, totalTime = state.totalTime, nodes = state.nodes)
   }
 
   private def calculateState(stackFrames: Iterator[String])(frameParser: String => Option[ParsedFrame]) = {
@@ -24,10 +24,13 @@ object FrameStackParser {
         }
     }
 
-    if (state.previousStack.nonEmpty)
-      flow(state, Seq.empty)
-    else
-      state
+    // calculates state for the last frame
+    val endState = flow(state, Seq.empty)
+
+    // adds base node that covers whole time range
+    endState.nodes.prepend(TimedFrame.empty.copy(endTime = state.totalTime))
+
+    endState
   }
 
   private def flow(state: StackState, currentStack: Stack) = {

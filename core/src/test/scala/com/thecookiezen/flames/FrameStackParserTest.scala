@@ -51,7 +51,7 @@ class FrameStackParserTest extends AnyFunSpec with Matchers {
       val result = FrameStackParser.parseSamples(stackFrames)(FrameParser.parse)
       result.ignored shouldBe 0
       result.totalTime shouldBe 7
-      result.nodes.size shouldBe 8
+      result.nodes.size shouldBe 9
     }
 
     it("should create single node for duplicated frames") {
@@ -62,7 +62,7 @@ class FrameStackParserTest extends AnyFunSpec with Matchers {
       )
 
       val result = FrameStackParser.parseSamples(stackFrames)(FrameParser.parse)
-      result.nodes.size shouldBe 1
+      result.nodes.size shouldBe 2
     }
 
     it("should build a list of all of the nodes from real life stack frames") {
@@ -71,7 +71,7 @@ class FrameStackParserTest extends AnyFunSpec with Matchers {
       val result = FrameStackParser.parseSamples(stackFrames)(FrameParser.parse)
       result.ignored shouldBe 0
       result.totalTime shouldBe 45
-      result.nodes.size shouldBe 273
+      result.nodes.size shouldBe 274
     }
   }
 }
