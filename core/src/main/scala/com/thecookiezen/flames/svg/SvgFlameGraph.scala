@@ -6,7 +6,7 @@ import scalatags.Text.TypedTag
 case class SvgFlameGraph(
     header: SvgElement = SvgPrinter.svgHeader,
     description: SvgElement = _ => SvgPrinter.description,
-    style: SvgElement = _ => SvgPrinter.style,
+    style: SvgElement = SvgPrinter.style,
     definitions: SvgElement = SvgPrinter.definitions,
     javascript: SvgElement = SvgPrinter.javascript,
     background: SvgElement = SvgPrinter.rect,
