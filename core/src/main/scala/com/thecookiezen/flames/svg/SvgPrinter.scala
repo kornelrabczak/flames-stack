@@ -3,7 +3,7 @@ package com.thecookiezen.flames.svg
 import com.thecookiezen.flames.stackframes.{FramePosition, TimedFrame}
 import com.thecookiezen.flames.stackframes.TimedFrame.{info, stripAnnotations, truncateFunctionName}
 import com.thecookiezen.flames.svg.Color.blackColor
-import scalatags.Text.implicits.{raw, _}
+import scalatags.Text.implicits._
 import scalatags.Text.svgAttrs._
 import scalatags.Text.{TypedTag, svgTags}
 
@@ -140,6 +140,12 @@ object SvgPrinter {
           location = None
         )
     )
+
+  val frames: Seq[TypedTag[String]] => TypedTag[String] = frames => {
+    svgTags.g(
+      id:= "frames"
+    )(frames: _*)
+  }
 
   val frame: (TimedFrame, Long) => GraphConfig => TypedTag[String] = (frame, totalTime) => config => {
     val framePosition = FramePosition(config, frame)

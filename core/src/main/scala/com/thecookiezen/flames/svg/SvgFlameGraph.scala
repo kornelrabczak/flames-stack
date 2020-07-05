@@ -31,7 +31,7 @@ case class SvgFlameGraph(
       resetZoom(graphConfig),
       search(graphConfig),
       searchResult(graphConfig)
-    )(framess: _*)
+    )(SvgPrinter.frames(framess))
   }.render
 }
 
