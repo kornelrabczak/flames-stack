@@ -75,7 +75,7 @@ object SvgPrinter {
         |  var fontwidth = ${config.fontWidth};
         |  var xpad = ${config.padVertical};
         |  var inverted = ${false};
-        |  var searchcolor = ${searchColor.toString};
+        |  var searchcolor = "${searchColor.toString}";
         |  
         |  ${Source.fromResource("flamegraph.js").mkString}
         |]]>
