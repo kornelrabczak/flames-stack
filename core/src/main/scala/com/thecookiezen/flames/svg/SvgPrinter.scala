@@ -94,7 +94,7 @@ object SvgPrinter {
   val detailsPlaceholder: GraphConfig => TypedTag[String] = config =>
     text(
       TextItem(
-        x = config.padVertical,
+        x = config.padVertical.toFloat,
         y = config.imageHeight - (config.padBottomWithLabels.toFloat / 2),
         attributes = Seq(Attribute("id", "details")),
         text = " "
@@ -106,7 +106,7 @@ object SvgPrinter {
       TextItem
         .fromConfig(config)
         .copy(
-          x = config.padVertical,
+          x = config.padVertical.toFloat,
           text = "Reset Zoom",
           attributes = Seq(
             Attribute("id", "unzoom"),
@@ -120,7 +120,7 @@ object SvgPrinter {
       TextItem
         .fromConfig(config)
         .copy(
-          x = config.imageWidth - config.padVertical - 100,
+          x = (config.imageWidth - config.padVertical - 100).toFloat,
           text = "Search",
           attributes = Seq(
             Attribute("id", "search")
@@ -131,7 +131,7 @@ object SvgPrinter {
   val searchResult: GraphConfig => TypedTag[String] = config =>
     text(
       TextItem(
-        x = config.imageWidth - config.padVertical - 100,
+        x = (config.imageWidth - config.padVertical - 100).toFloat,
         y = config.imageHeight - (config.padBottomWithLabels.toFloat / 2),
         attributes = Seq(Attribute("id", "matched"))
       )
@@ -175,8 +175,8 @@ object SvgPrinter {
     )(item.text)
 
   case class TextItem(
-      x: Double,
-      y: Double,
+      x: Float,
+      y: Float,
       text: String = "",
       attributes: Seq[Attribute] = Seq.empty
   )
@@ -186,7 +186,7 @@ object SvgPrinter {
   object TextItem {
     def fromConfig(config: GraphConfig): TextItem = TextItem(
       x = config.imageWidth.toFloat / 2,
-      y = config.fontSize * 2
+      y = config.fontSize.toFloat * 2
     )
   }
 }

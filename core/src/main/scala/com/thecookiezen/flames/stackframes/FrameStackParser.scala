@@ -7,7 +7,7 @@ object FrameStackParser {
 
   def parseSamples(stackFrames: Iterator[String])(frameParser: String => Option[ParsedFrame]): ParsingResult = {
     val state = calculateState(stackFrames)(frameParser)
-    ParsingResult(ignored = state.ignored, totalTime = state.totalTime, nodes = state.nodes)
+    ParsingResult(ignored = state.ignored, totalTime = state.totalTime, nodes = state.nodes.toSeq)
   }
 
   private def calculateState(stackFrames: Iterator[String])(frameParser: String => Option[ParsedFrame]) = {

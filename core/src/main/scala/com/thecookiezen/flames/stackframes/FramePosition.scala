@@ -11,7 +11,7 @@ object FramePosition {
   def apply(config: GraphConfig, frame: TimedFrame): FramePosition = new FramePosition(
     x1 = config.padVertical + (frame.startTime * config.widthPerTime),
     x2 = config.padVertical + (frame.endTime * config.widthPerTime),
-    y1 = config.imageHeight - config.padBottomWithLabels - (frame.frame.depth + 1) * config.frameHeight + config.framePad,
-    y2 = config.imageHeight - config.padBottomWithLabels - frame.frame.depth * config.frameHeight
+    y1 = config.imageHeight - config.padBottomWithLabels - (frame.frame.depth + 1) * config.frameHeight.toFloat + config.framePad,
+    y2 = config.imageHeight - config.padBottomWithLabels.toFloat - frame.frame.depth * config.frameHeight
   )
 }
