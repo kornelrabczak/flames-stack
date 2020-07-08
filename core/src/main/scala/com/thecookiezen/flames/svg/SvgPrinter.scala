@@ -155,7 +155,7 @@ object SvgPrinter {
           y := framePosition.y1,
           width := framePosition.width,
           height := framePosition.height,
-          fill := Color(242, 10, 32).toString
+          fill := Color.byFunction(frame.frame.function).toString
         ),
         text(
           TextItem(

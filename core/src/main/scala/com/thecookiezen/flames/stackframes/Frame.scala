@@ -10,8 +10,6 @@ object TimedFrame {
 
   def empty: TimedFrame = TimedFrame(frame = Frame("", 0), startTime = 0, endTime = 0)
 
-  val maxDepthOfFrame: Seq[TimedFrame] => Long = _.maxBy(_.frame.depth).frame.depth
-
   val isFrameTooNarrow: (TimedFrame, Float) => Boolean = (frame, minTime) =>
     frame.endTime - frame.startTime < minTime
 
